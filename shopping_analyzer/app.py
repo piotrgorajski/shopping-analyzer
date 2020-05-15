@@ -4,7 +4,7 @@ import re
 from shopping_analyzer.argument_parser import get_source_argument
 from shopping_analyzer.receipt_ocr import ocr_receipts
 
-# TODO Resolve issue with GitHub auth and commit/push current state!
+
 def run():
     source_directory = get_source_argument()
 
