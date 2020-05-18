@@ -15,12 +15,29 @@ class Receipt:
 class ReceiptItem:
     def __init__(self, name, quantity, price, cost):
         self.name = name
-        self.quantity = quantity
-        self.price = price
-        self.cost = cost
+        self.quantity = float(ReceiptItem.replace_comma_with_dot(quantity))
+        self.price = float(ReceiptItem.replace_comma_with_dot(price))
+        self.cost = float(ReceiptItem.replace_comma_with_dot(cost))
+
+    @staticmethod
+    def replace_comma_with_dot(text):
+        return text.replace(',', '.')
 
     def __str__(self):
         return f'ReceiptItem[{self.name}: {self.quantity} * {self.price} = {self.cost}]'
+
+    def __repr__(self):
+        return self.__str__()
+
+
+# Figure out better name na place for that class (statistics module?)
+class ReceiptItemSummary:
+    def __init__(self, name, cost):
+        self.name = name
+        self.cost = cost
+
+    def __str__(self):
+        return f'ReceiptItemSummary[{self.name}: {self.cost}]'
 
     def __repr__(self):
         return self.__str__()
