@@ -1,8 +1,9 @@
 import re
+from functional import seq
 
 from shopping_analyzer.receipt import ReceiptItem, Receipt
 
-item_pattern = re.compile(r"(?P<name>.*)\s+(?P<quantity>\d+)\s*\*\s+(?P<price>\d+,\d{2})\s+(?P<cost>\d+,\d{2})\s*.*")
+item_pattern = re.compile(r"(?P<name>.+)\s+(?P<quantity>\d+)\s*\*\s+(?P<price>\d+,\d{2})\s+(?P<cost>\d+,\d{2})\s*.*")
 
 
 def process_text_receipts(text_receipts):
@@ -30,7 +31,10 @@ def extract_receipt_items(text_receipt):
     text_receipt_items = re.findall(r".*www\.lidl\.pl\s*\d{4}-\d{2}-\d{2}(.*)PTU A.*", text_receipt, re.DOTALL)
     text_receipt_item_lines = text_receipt_items[0].splitlines()
     # no_blanks_items = filter(lambda item: not item, text_receipt_item_lines)
-    return list(map(lambda text_receipt_item: parse_single_receipt_item(text_receipt_item), text_receipt_item_lines))
+    return seq(text_receipt_item_lines) \
+        .map(lambda text_receipt_item: parse_single_receipt_item(text_receipt_item)) \
+        .filter(None) \
+        .to_list()
 
 
 def parse_single_receipt_item(text_receipt_item):
