@@ -12,7 +12,7 @@ def ocr_receipts(source_directory, img_receipt_paths):
     # TODO Is there something like java Stream API in Python?
     text_receipts = []
     for receipt_img_path in img_receipt_paths:
-        # TODO Sometimes zero gets read as eight. Fix that
+        # TODO Make tesseract read 0 instead of 8 when sometime 0 has a dash inside
         receipt_text = pytesseract.image_to_string(receipt_img_path, lang='pol')
         text_receipts.append(receipt_text)
 
