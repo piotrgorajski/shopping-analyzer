@@ -2,6 +2,7 @@ import glob
 import re
 
 from shopping_analyzer.argument_parser import get_source_argument
+from shopping_analyzer.csv_export import write_data_to_csv
 from shopping_analyzer.receipt import ReceiptItem, Receipt, ReceiptItemSummary
 from shopping_analyzer.receipt_ocr import ocr_receipts
 from shopping_analyzer.receipt_processor import process_text_receipts
@@ -25,17 +26,27 @@ def run():
     for receipt in receipts:
         for item in receipt.items:
             if item.name in receipt_items_summary.keys():
-                receipt_items_summary[item.name] += item.cost
+                receipt_items_summary[item.name] = receipt_items_summary.get(item.name).add_cost(item.cost)
             else:
-                receipt_items_summary[item.name] = item.cost
+                receipt_items_summary[item.name] = ReceiptItemSummary(item.name, item.cost)
 
-    foo_summary = []
-    for foo_key in receipt_items_summary.keys():
-        foo_summary.append(ReceiptItemSummary(foo_key, receipt_items_summary[foo_key]))
+    # TODO Extract below to some new (statistics) module
+    statistic0 = sorted(map(lambda x: [x.name], receipt_items_summary.values()))
+    # print(statistic0)
+    write_data_to_csv(source_directory, 'statistic0.csv', statistic0)
 
-    foo_summary.sort(key=lambda x: x.cost, reverse=True)
-    print(foo_summary)
+    statistic1a = sorted(receipt_items_summary.values(), key=lambda x: x.cost, reverse=True)
+    # print(statistic1a)
+    write_data_to_csv(source_directory, 'statistic1a.csv', map(lambda x: [x.name, x.cost], statistic1a))
 
+    # TODO Analysis:
+    #  0) List all distinct items to validate and prepare categories for each (consider using str similarity algorithms)
+    #  1a) All distinct items with total cost across all time
+    #  1b) All distinct items with total cost grouped by month
+    #  2a) [categories are ready] All time cost for all categories
+    #  2b) [categories are ready] Per month cost for all categories
+
+    # TODO Add loading config file with items mapped to categories (json? yaml?)
     # TODO Perform statistical operations to get interesting data
     # TODO Output results as files (csv?)
     # TODO Add unit tests. What about e2e?

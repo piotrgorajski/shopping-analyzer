@@ -36,6 +36,9 @@ class ReceiptItemSummary:
         self.name = name
         self.cost = cost
 
+    def add_cost(self, new_cost):
+        return ReceiptItemSummary(self.name, self.cost + new_cost)
+
     def __str__(self):
         return f'ReceiptItemSummary[{self.name}: {self.cost}]'
 
