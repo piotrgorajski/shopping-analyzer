@@ -1,7 +1,8 @@
 import re
+
 from functional import seq
 
-from shopping_analyzer.receipt import ReceiptItem, Receipt
+from shopping_analyzer.receipt_processor.receipt import ReceiptItem, Receipt
 
 item_pattern = re.compile(r"(?P<name>.+)\s+(?P<quantity>\d+)\s*\*\s+(?P<price>\d+,\d{2})\s+(?P<cost>\d+,\d{2})\s*.*")
 

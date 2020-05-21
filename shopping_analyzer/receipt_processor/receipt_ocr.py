@@ -3,8 +3,9 @@ try:
     from PIL import Image
 except ImportError:
     import Image
-import pytesseract
 import ntpath
+
+import pytesseract
 
 
 def ocr_receipts(source_directory, img_receipt_paths):
