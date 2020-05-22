@@ -20,7 +20,7 @@ def ocr_receipts(source_directory, img_receipt_paths):
 
         # TODO Remove this fake data files structure. Read source argument. You may create some tmp dir for text files
         # TODO For history reruns maybe read saved text files instead of ocr all again
-        with open(f'{source_directory}/text/{ntpath.basename(receipt_img_path)}.txt', 'w') as txt_receipt_file:
-            txt_receipt_file.write(receipt_text)
+        with open(f'{source_directory}/text/{ntpath.basename(receipt_img_path)}.txt', 'wb') as txt_receipt_file:
+            txt_receipt_file.write(receipt_text.encode("utf8"))
 
     return text_receipts
