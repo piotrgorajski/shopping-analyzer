@@ -1,14 +1,14 @@
-from shopping_analyzer.argument_parser import get_source_argument
+from shopping_analyzer.argument_parser import get_app_arguments
 from shopping_analyzer.receipt_processor.receipt_processor import process_input_receipts
 from shopping_analyzer.shopping_statistics.shopping_statistics import generate_statistics
 
 
 def run():
-    # get source parameter
-    source_directory = get_source_argument()
+    # read app arguments
+    app_args = get_app_arguments()
 
     # ocr and process source files
-    receipts = process_input_receipts(source_directory)
+    receipts = process_input_receipts(app_args.source, app_args.perform_ocr)
 
     # generate various statistics as csv files
-    generate_statistics(receipts, source_directory)
+    generate_statistics(receipts, app_args.source)

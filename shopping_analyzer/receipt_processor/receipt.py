@@ -28,3 +28,15 @@ class ReceiptItem:
 
     def __repr__(self):
         return self.__str__()
+
+
+class OcrReceipt:
+    def __init__(self, source_file_name, receipt_text):
+        self.source_file_name = source_file_name
+        self.receipt_text = receipt_text
+
+    def __str__(self):
+        return f'ReceiptOcr[{self.source_file_name}]'
+
+    def __repr__(self):
+        return self.__str__()
