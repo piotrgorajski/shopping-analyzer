@@ -1,23 +1,36 @@
+import logging
 import re
 
 from functional import seq
 
 from shopping_analyzer.receipt_processor.receipt import ReceiptItem, Receipt
 
+receipt_pattern = re.compile(
+    r".*www\.lidl\.pl\s*(?P<date>\d{4}-\d{2}-\d{2})(?P<items>.*)PTU A.*RAZEM PLN\s+(?P<total_amount>\d+,\d{2}).*",
+    re.DOTALL)
 item_pattern = re.compile(r"(?P<name>.+)\s+(?P<quantity>\d+)\s*\*\s+(?P<price>\d+,\d{2})\s+(?P<cost>\d+,\d{2})\s*.*")
 
 
-def process_text_receipts(text_receipts):
-    return list(map(lambda text_receipt: process_single_text_receipt(text_receipt), text_receipts))
+def process_ocr_receipts(ocr_receipts):
+    return seq(ocr_receipts) \
+        .map(lambda ocr_receipt: process_single_text_receipt(ocr_receipt)) \
+        .filter(None) \
+        .to_list()
 
 
-def process_single_text_receipt(text_receipt):
-    date = extract_receipt_date(text_receipt)
-    total_amount = extract_receipt_total_amount(text_receipt)
-    receipt_items = extract_receipt_items(text_receipt)
-    # TODO Perform validation on items sum vs total amount
-    # TODO Log as error any issues in the data
-    return Receipt(date, receipt_items, total_amount)
+def process_single_text_receipt(ocr_receipt):
+    # TODO Pass here also receipt metadata to be able to log invalid receipt filename
+    receipt_match = re.match(receipt_pattern, ocr_receipt.receipt_text)
+    if receipt_match:
+        date = receipt_match.group('date')
+        total_amount = receipt_match.group('total_amount')
+        raw_receipt_items = receipt_match.group('items')
+        receipt_items = extract_receipt_items(raw_receipt_items)
+        # TODO Perform validation on items sum vs total amount
+        # TODO Log as error any issues in the data
+        return Receipt(date, receipt_items, total_amount)
+    else:
+        logging.error(f'Failed to match whole receipt: [{ocr_receipt.source_file_name}]')
 
 
 def extract_receipt_date(text_receipt):

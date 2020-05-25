@@ -1,4 +1,7 @@
 import glob
+import ntpath
+
+from shopping_analyzer.receipt_processor.receipt import OcrReceipt
 
 
 def save_ocr_text_in_files(ocr_receipts, source_directory):
@@ -15,5 +18,5 @@ def read_ocr_text_receipts(source_directory):
     for text_receipt_path in text_receipt_paths:
         with open(text_receipt_path, 'r') as text_receipt_file:
             text_receipt_lines = text_receipt_file.readlines()
-            text_receipts.append('\n'.join(text_receipt_lines))
+            text_receipts.append(OcrReceipt(ntpath.basename(text_receipt_path), '\n'.join(text_receipt_lines)))
     return text_receipts
