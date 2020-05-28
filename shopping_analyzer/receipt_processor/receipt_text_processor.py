@@ -11,7 +11,13 @@ failed_receipt_items_count = 0
 receipt_pattern = re.compile(
     r".*www\.lidl\.pl\s*(?P<date>\d{4}-\d{2}-\d{2})(?P<items>.*)PTU A.*RAZEM PLN\s+(?P<total_amount>\d+,\d{2}).*",
     re.DOTALL)
-item_pattern = re.compile(r"(?P<name>.+)\s+(?P<quantity>\d+)\s*\*\s+(?P<price>\d+,\d{2})\s+(?P<cost>\d+,\d{2})\s*.*")
+
+regular_item_pattern = re.compile(
+    r"(?P<name>.+)\s+(?P<quantity>\d+)\s*\*\s+(?P<price>\d+,\d{2})\s+(?P<cost>\d+,\d{2})\s*.*")
+
+lidl_plus_discount_item_pattern = re.compile(r"Lidl Plus rabat\s+-(?P<discount_amount>\d+,\d{2})")
+
+common_discount_item_pattern = re.compile(r"^(?!Lidl Plus rabat).*\s+-(?P<discount_amount>\d+,\d{2})")
 
 
 def process_ocr_receipts(ocr_receipts):
@@ -47,22 +53,35 @@ def extract_receipt_items(text_receipt):
 
 
 def parse_single_receipt_item(text_receipt_item):
-    item_match = re.match(item_pattern, text_receipt_item)
-    # TODO Add more complex filtering (lidl discounts)
-    if item_match:
-        return parse_matching_text_receipt_item(item_match)
+    regular_item_match = re.match(regular_item_pattern, text_receipt_item)
+    lidl_plus_discount_item_match = re.match(lidl_plus_discount_item_pattern, text_receipt_item)
+    common_discount_item_match = re.match(common_discount_item_pattern, text_receipt_item)
+    if regular_item_match:
+        return parse_matching_regular_item(regular_item_match)
+    elif lidl_plus_discount_item_match:
+        return parse_matching_lidl_plus_discount_item(lidl_plus_discount_item_match)
+    elif common_discount_item_match:
+        return parse_matching_common_discount_item(common_discount_item_match)
     else:
         global failed_receipt_items_count
         failed_receipt_items_count += 1
         logging.error(f'{failed_receipt_items_count} Failed to process following receipt item: {text_receipt_item}')
 
 
-def parse_matching_text_receipt_item(item_match):
+def parse_matching_regular_item(item_match):
     # TODO Perform validation on items like if the a * b = c
-    # TODO Log as error any issues in the data
     name = item_match.group('name')
     quantity = item_match.group('quantity')
     price = item_match.group('price')
     cost = item_match.group('cost')
-    # print(f"printed: {name}: {quantity} * {price} = {cost}")
     return ReceiptItem(name, quantity, price, cost)
+
+
+def parse_matching_lidl_plus_discount_item(item_match):
+    cost = item_match.group('discount_amount')
+    return ReceiptItem('Lidl Plus rabat', None, None, cost)
+
+
+def parse_matching_common_discount_item(item_match):
+    cost = item_match.group('discount_amount')
+    return ReceiptItem('standardowy rabat', None, None, cost)

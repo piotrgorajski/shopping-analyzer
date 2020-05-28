@@ -15,8 +15,10 @@ class Receipt:
 class ReceiptItem:
     def __init__(self, name, quantity, price, cost):
         self.name = name
-        self.quantity = float(ReceiptItem.replace_comma_with_dot(quantity))
-        self.price = float(ReceiptItem.replace_comma_with_dot(price))
+        if quantity:
+            self.quantity = float(ReceiptItem.replace_comma_with_dot(quantity))
+        if price:
+            self.price = float(ReceiptItem.replace_comma_with_dot(price))
         self.cost = float(ReceiptItem.replace_comma_with_dot(cost))
 
     @staticmethod
