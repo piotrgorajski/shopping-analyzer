@@ -34,7 +34,7 @@ def process_single_text_receipt(ocr_receipt):
         date = receipt_match.group('date')
         total_amount = receipt_match.group('total_amount')
         raw_receipt_items = receipt_match.group('items')
-        receipt_items = extract_receipt_items(raw_receipt_items)
+        receipt_items = extract_receipt_items(raw_receipt_items, ocr_receipt)
         # logging.info(f"Count of all receipt items is: {all_receipt_items_count}")
         # TODO Perform validation on items sum vs total amount
         # TODO Log as error any issues in the data
@@ -45,17 +45,17 @@ def process_single_text_receipt(ocr_receipt):
         # logging.error(f'{failed_receipts_count} Failed to match whole receipt: [{ocr_receipt.source_file_name}]')
 
 
-def extract_receipt_items(text_receipt):
+def extract_receipt_items(text_receipt, ocr_receipt):
     text_receipt_item_lines = text_receipt.splitlines()
     return seq(text_receipt_item_lines) \
         .filter(None) \
         .map(lambda text_receipt_item: clean_text_receipt_item(text_receipt_item)) \
-        .map(lambda text_receipt_item: parse_single_receipt_item(text_receipt_item)) \
+        .map(lambda text_receipt_item: parse_single_receipt_item(text_receipt_item, ocr_receipt)) \
         .filter(None) \
         .to_list()
 
 
-def parse_single_receipt_item(text_receipt_item):
+def parse_single_receipt_item(text_receipt_item, ocr_receipt):
     # TODO Handle such counts somehow nicer
     global all_receipt_items_count
     all_receipt_items_count += 1
@@ -72,7 +72,7 @@ def parse_single_receipt_item(text_receipt_item):
     else:
         global failed_receipt_items_count
         failed_receipt_items_count += 1
-        logging.error(f'{failed_receipt_items_count} Failed to process following receipt item: {text_receipt_item}')
+        logging.error(f'{failed_receipt_items_count} Failed to process following receipt item [{ocr_receipt.source_file_name}]: {text_receipt_item}')
 
 
 def clean_text_receipt_item(text_receipt_item):
