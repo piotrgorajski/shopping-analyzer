@@ -1,6 +1,7 @@
 class Receipt:
 
-    def __init__(self, date, items, total_amount):
+    def __init__(self, source_file_name, date, items, total_amount):
+        self.source_file_name = source_file_name
         self.date = date
         self.items = items
         self.total_amount = total_amount

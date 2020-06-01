@@ -36,9 +36,7 @@ def process_single_text_receipt(ocr_receipt):
         raw_receipt_items = receipt_match.group('items')
         receipt_items = extract_receipt_items(raw_receipt_items, ocr_receipt)
         # logging.info(f"Count of all receipt items is: {all_receipt_items_count}")
-        # TODO Perform validation on items sum vs total amount
-        # TODO Log as error any issues in the data
-        return Receipt(date, receipt_items, total_amount)
+        return Receipt(ocr_receipt.source_file_name, date, receipt_items, total_amount)
     else:
         global failed_receipts_count
         failed_receipts_count += 1
@@ -72,7 +70,8 @@ def parse_single_receipt_item(text_receipt_item, ocr_receipt):
     else:
         global failed_receipt_items_count
         failed_receipt_items_count += 1
-        logging.error(f'{failed_receipt_items_count} Failed to process following receipt item [{ocr_receipt.source_file_name}]: {text_receipt_item}')
+        logging.error(
+            f'{failed_receipt_items_count} Failed to process following receipt item [{ocr_receipt.source_file_name}]: {text_receipt_item}')
 
 
 def clean_text_receipt_item(text_receipt_item):
@@ -83,7 +82,6 @@ def clean_text_receipt_item(text_receipt_item):
 
 
 def parse_matching_regular_item(item_match):
-    # TODO Perform validation on items like if the a * b = c
     name = item_match.group('name')
     quantity = item_match.group('quantity').replace(' ', '')
     price = item_match.group('price').replace(' ', '')
