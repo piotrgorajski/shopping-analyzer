@@ -71,7 +71,8 @@ def parse_single_receipt_item(text_receipt_item, ocr_receipt):
         global failed_receipt_items_count
         failed_receipt_items_count += 1
         logging.error(
-            f'{failed_receipt_items_count} Failed to process following receipt item [{ocr_receipt.source_file_name}]: {text_receipt_item}')
+            f'[{failed_receipt_items_count}] Failed to process following receipt item [{ocr_receipt.source_file_name}]:'
+            f' {text_receipt_item}')
 
 
 def clean_text_receipt_item(text_receipt_item):
