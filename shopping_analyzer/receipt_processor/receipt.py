@@ -19,7 +19,7 @@ class Receipt:
 class ReceiptItem:
     def __init__(self, name, quantity, price, cost):
         self.name = name
-        self.quantity = convert_string_to_decimal(quantity)
+        self.quantity = convert_string_to_decimal(quantity, 3)
         self.price = convert_string_to_decimal(price)
         self.cost = convert_string_to_decimal(cost)
 
@@ -42,6 +42,6 @@ class OcrReceipt:
         return self.__str__()
 
 
-def convert_string_to_decimal(text):
+def convert_string_to_decimal(text, precision=2):
     if text:
-        return round(Decimal(text.replace(',', '.')), 2)
+        return round(Decimal(text.replace(',', '.')), precision)
