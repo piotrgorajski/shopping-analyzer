@@ -23,7 +23,7 @@ def validate_receipt_total_amount(receipt):
         invalid_receipt_total_amounts += 1
         logging.error(
             f'[{receipt.source_file_name}] [{invalid_receipt_total_amounts}] Invalid receipt total amount detected. '
-            f'Sum is: {receipt_items_cost_sum} while total is: {receipt_items_cost_sum}')
+            f'Sum is: {receipt_items_cost_sum} while total is: {receipt.total_amount}')
 
 
 def validate_receipt_items(receipt):
