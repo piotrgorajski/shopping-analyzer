@@ -19,9 +19,9 @@ def run():
     logging.info(f'Processing {len(receipts)} receipts')
 
     # validate receipt items data
-    validate_receipts(receipts)
+    fixed_receipts = validate_receipts(receipts)
 
     # generate various statistics as csv files
-    generate_statistics(receipts, app_args.source)
+    generate_statistics(fixed_receipts, app_args.source)
 
     logging.info('Application End')
